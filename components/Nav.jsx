@@ -5,15 +5,21 @@ import Image from "next/image"
 import { useState, useEffect } from "react"
 import { signIn, signOut, useSession, getProviders } from 'next-auth/react'
 
+
 const Nav = () => {
-    const isUserLogged = true
+    const { data: session } = useSession()
     const [providers, setProviders] = useState(null)
     const [toggleDropdown, setToggleDropdown] = useState(false)
 
     useEffect(() => {
         (async () => {
-            const res = await getProviders()
-            setProviders(res)
+            try {
+                const res = await getProviders()
+                console.log(res)
+                setProviders(res)
+            } catch (error) {
+                console.error("Error fetching providers:", error)
+            }
         })()
     }, [])
 
@@ -31,7 +37,7 @@ const Nav = () => {
             </Link>
             {/* Desktop Navigation */}
             <div className="sm:flex hidden">
-                {isUserLogged ? (
+                {session?.user ? (
                     <div className="flex gap-3 md:gap-5">
                         <Link href="/create-prompt"
                             className="black_btn"
@@ -45,7 +51,7 @@ const Nav = () => {
                         </button>
                         <Link href="/profile">
                             <Image
-                                src="/assets/images/logo.svg"
+                                src={session?.user.image}
                                 width={37}
                                 height={37}
                                 className="rounded-full"
@@ -72,10 +78,10 @@ const Nav = () => {
             </div>
             {/* Mobile Navigation */}
             <div className="sm:hidden flex relative">
-                {isUserLogged ? (
+                {session?.user ? (
                     <div className="flex">
                         <Image
-                            src='/assets/images/logo.svg'
+                            src={session?.user.image}
                             alt="Profile"
                             width={30}
                             height={30}

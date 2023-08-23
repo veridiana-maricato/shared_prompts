@@ -22,7 +22,6 @@ const Feed = () => {
     const [posts, setPosts] = useState([])
 
     const handleSearchChange = async (e) => {
-
     }
 
     const fetchPosts = async () => {
@@ -30,7 +29,6 @@ const Feed = () => {
         const data = await res.json()
         setPosts(data)
     }
-
 
     useEffect(() => {
         fetchPosts()

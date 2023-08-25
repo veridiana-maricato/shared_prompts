@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Profile from "@components/Profile";
 
 const MyProfile = () => {
+    const [isLoading, setIsLoading] = useState(false)
     const router = useRouter();
     const { data: session } = useSession();
 
@@ -14,10 +15,12 @@ const MyProfile = () => {
 
     useEffect(() => {
         const fetchPosts = async () => {
+            setIsLoading(true)
             const response = await fetch(`/api/users/${session?.user.id}/posts`);
             const newData = await response.json();
 
             setMyPosts(newData);
+            setIsLoading(false)
         };
 
         if (session?.user.id) fetchPosts();
@@ -54,6 +57,7 @@ const MyProfile = () => {
             data={myPosts}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
+            isLoading={isLoading}
         />
     );
 };

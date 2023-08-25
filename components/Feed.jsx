@@ -22,10 +22,13 @@ const Feed = () => {
     const [filteredPosts, setFilteredPosts] = useState([])
     const [posts, setPosts] = useState([])
     const [isShowingAll, setIsShowingAll] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
 
     const fetchPosts = async () => {
+        setIsLoading(true)
         const res = await fetch('/api/prompt')
         const data = await res.json()
+        setIsLoading(false)
         setPosts(data)
     }
 
@@ -50,7 +53,7 @@ const Feed = () => {
             return post.prompt.toLowerCase().includes(searchText.toLowerCase())
         })
         setFilteredPosts(filteredResult)
-    }, [searchText])
+    }, [searchText, posts])
 
     // handle tag click
     const filterByTag = (e) => {
@@ -61,7 +64,13 @@ const Feed = () => {
         setIsShowingAll(false)
     }
 
-    return (
+    const isLoadingContent = (
+        <div>
+            <p className="orange_gradient mt-16">Loading...</p>
+        </div>
+    )
+
+    const postsFeed = (
         <section className="feed">
             <form className="relative w-full flex-center">
                 <input
@@ -86,6 +95,12 @@ const Feed = () => {
             />
         </section>
     )
+
+    if (isLoading) {
+        return isLoadingContent
+    } else {
+        return postsFeed
+    }
 }
 
 export default Feed

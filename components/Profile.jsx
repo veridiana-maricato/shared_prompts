@@ -1,7 +1,14 @@
 import PromptCard from "./PromptCard"
 
-const Profile = ({ name, description, data, handleEdit, handleDelete }) => {
-    return (
+const Profile = ({ name, description, data, handleEdit, handleDelete, isLoading }) => {
+
+    const isLoadingContent = (
+        <div>
+            <p className="orange_gradient mt-16">Loading...</p>
+        </div>
+    )
+
+    const loadedContent = (
         <section className="w-full">
             <h1 className="head_text text-left">
                 <span className="blue_gradient">
@@ -21,6 +28,9 @@ const Profile = ({ name, description, data, handleEdit, handleDelete }) => {
             </div>
         </section>
     )
+
+    if (isLoading) return isLoadingContent
+    return loadedContent
 }
 
 export default Profile

@@ -5,7 +5,7 @@ import PromptCard from './PromptCard'
 const PromptCardList = ({ data, handleTagClick }) => {
 
     return (
-        <div className="mt-16 prompt_layout">
+        <div className="mt-4 prompt_layout">
             {data.map((post) => (
                 <PromptCard
                     key={post._id}
@@ -19,10 +19,9 @@ const PromptCardList = ({ data, handleTagClick }) => {
 
 const Feed = () => {
     const [searchText, setSearchText] = useState('')
+    const [filteredPosts, setFilteredPosts] = useState([])
     const [posts, setPosts] = useState([])
-
-    const handleSearchChange = async (e) => {
-    }
+    const [isShowingAll, setIsShowingAll] = useState(true)
 
     const fetchPosts = async () => {
         const res = await fetch('/api/prompt')
@@ -32,7 +31,35 @@ const Feed = () => {
 
     useEffect(() => {
         fetchPosts()
+        setFilteredPosts(posts)
+        setIsShowingAll(true)
     }, [])
+
+    // handle filter
+    const handleSearchChange = async (e) => {
+        setSearchText(e.target.value)
+        if (e.target.value === "") {
+            setIsShowingAll(true)
+        } else {
+            setIsShowingAll(false)
+        }
+    }
+
+    useEffect(() => {
+        const filteredResult = posts.filter(post => {
+            return post.prompt.toLowerCase().includes(searchText.toLowerCase())
+        })
+        setFilteredPosts(filteredResult)
+    }, [searchText])
+
+    // handle tag click
+    const filterByTag = (e) => {
+        const filteredResult = posts.filter(post => {
+            return post.tag.includes(e)
+        })
+        setFilteredPosts(filteredResult)
+        setIsShowingAll(false)
+    }
 
     return (
         <section className="feed">
@@ -46,9 +73,16 @@ const Feed = () => {
                     className="search_input peer"
                 />
             </form>
+            <button
+                className={`mt-4 orange_btn ${isShowingAll ? 'hidden' : 'block'}`}
+                onClick={() => {
+                    setFilteredPosts(posts)
+                    setIsShowingAll(true)
+                }}
+            >Show all posts</button>
             <PromptCardList
-                data={posts}
-                handleTagClick={() => { }}
+                data={filteredPosts}
+                handleTagClick={filterByTag}
             />
         </section>
     )
